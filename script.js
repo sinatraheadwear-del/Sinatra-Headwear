@@ -41,11 +41,11 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "Sinatra Skullie", 
       category: "skullcaps", 
       price: 209, 
-      image: "images/IMG_9067.png",
+      image: "IMG_9067.png",
       colors: ["Black", "Grey"],
       colorImages: {
-        "Black": "images/IMG_9067.png",
-        "Grey": "images/IMG_9081.png"
+        "Black": "IMG_9067.png",
+        "Grey": "IMG_9081.png"
       },
       sizes: ["One Size"],
       stock: 5,
@@ -56,11 +56,11 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "SNT Beanie", 
       category: "beanies", 
       price: 139, 
-      image: "images/IMG_9081.png",
+      image: "IMG_9081.png",
       colors: ["Black", "Grey"],
       colorImages: {
-        "Black": "images/IMG_9081.png",
-        "Grey": "images/IMG_9067.png"
+        "Black": "IMG_9081.png",
+        "Grey": "IMG_9067.png"
       },
       sizes: ["One Size"],
       stock: 0,
@@ -71,10 +71,10 @@ document.addEventListener("DOMContentLoaded", () => {
       name: "SNT Trucker Cap", 
       category: "caps", 
       price: 279, 
-      image: "images/IMG_9076.png",
+      image: "IMG_9076.png",
       colors: ["Olive"],
       colorImages: {
-        "Olive": "images/IMG_9076.png"
+        "Olive": "IMG_9076.png"
       },
       sizes: ["One Size"],
       stock: 0,
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cartItemsContainer.innerHTML = cart.map((item, index) => {
       const itemTotal = item.price * (item.quantity || 1);
       total += itemTotal;
-      const itemImg = item.colorImage || item.image || 'images/IMG_9067.png';
+      const itemImg = item.colorImage || item.image || 'IMG_9067.png';
 
       return `
         <div style="display:flex; justify-content:space-between; align-items:center; padding: 10px 0; border-bottom: 1px solid #222;">

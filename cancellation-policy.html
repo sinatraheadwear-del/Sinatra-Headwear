@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cancellation Policy | Sinatra Headwear</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="announcement-bar">
+    <p>Free Local Delivery • Free Delivery on Orders Over R600 • Delivery 4–12 Business Days • Limited Stock</p>
+  </div>
+
+  <header>
+    <a href="index.html" class="logo">
+      <img src="images/IMG_9084.png" alt="Sinatra Headwear">
+    </a>
+
+    <div class="header-icons">
+      <button id="cartBtn" aria-label="Cart">
+        <i class="fa-solid fa-bag-shopping"></i>
+        <span id="cartCount">0</span>
+      </button>
+
+      <button id="menuBtn" aria-label="Menu">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="menu-panel" id="menuPanel">
+    <button id="closeMenu" aria-label="Close Menu"><i class="fa-solid fa-xmark"></i></button>
+
+    <div class="menu-logo">
+      <img src="images/IMG_9084.png" alt="Sinatra Headwear Logo">
+    </div>
+
+    <nav>
+      <a href="index.html">Home</a>
+      <button id="shopToggle">Shop <i class="fa-solid fa-chevron-down"></i></button>
+      <div id="shopLinks">
+        <a href="shop.html?category=beanies">Beanies</a>
+        <a href="shop.html?category=skullcaps">Skull Caps</a>
+        <a href="shop.html?category=caps">Caps</a>
+      </div>
+      <a href="about.html">About</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+
+  <div class="cart-panel" id="cartPanel">
+    <button id="closeCart" aria-label="Close Cart"><i class="fa-solid fa-xmark"></i></button>
+    <h2>Your Cart</h2>
+
+    <div id="cartItems">
+      <p class="empty-msg">Your cart is empty.</p>
+    </div>
+
+    <div class="cart-footer">
+      <div class="cart-total-row">
+        <span>Total:</span>
+        <span id="cartTotal">R0.00</span>
+      </div>
+      <a href="checkout.html" class="checkout-btn">Proceed To Checkout</a>
+    </div>
+  </div>
+
+  <section class="shop-header">
+    <h1>CANCELLATION POLICY</h1>
+    <p style="color: #aaa; margin-top: 10px; font-size: 0.95rem;">LAST UPDATED: 3 AUGUST 2026</p>
+  </section>
+
+  <section style="max-width: 900px; margin: 40px auto; padding: 0 20px; line-height: 1.8; color: #ddd; font-family: 'Inter', sans-serif;">
+    <p style="margin-bottom: 25px;">Orders may be cancelled before they have been packed or shipped.</p>
+    <p style="margin-bottom: 25px;">If your order has already been dispatched, it cannot be cancelled and must instead follow our <a href="refund-policy.html" style="color: #fff; underline: true;">Return Policy</a>.</p>
+    <p style="margin-bottom: 25px;">To request a cancellation, please contact us as soon as possible at <strong>sinatraheadwear@gmail.com</strong> or <strong>0760317463</strong>.</p>
+    <p style="margin-bottom: 25px;">If payment has already been processed and the order is successfully cancelled, your refund will be issued using the original payment method.</p>
+  </section>
+
+  <footer class="footer">
+    <div class="footer-brand">
+      <a href="index.html" class="footer-logo">
+        <img src="images/IMG_9084.png" alt="Sinatra Headwear">
+      </a>
+      <p>Kultcha's premium headwear brand engineered for street culture and everyday style. Free local delivery for our kultcha family.</p>
+    </div>
+
+    <div class="footer-section">
+      <h4>NAVIGATION</h4>
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="shop.html">Shop All</a></li>
+        <li><a href="about.html">About Brand</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4>CUSTOMER CARE</h4>
+      <ul>
+        <li><a href="delivery-policy.html">Delivery Policy</a></li>
+        <li><a href="refund-policy.html">Refund Policy</a></li>
+        <li><a href="cancellation-policy.html">Cancellation Policy</a></li>
+        <li><a href="terms.html">Terms & Conditions</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-section">
+      <h4>CONNECT</h4>
+      <div class="social-icons">
+        <a href="https://www.facebook.com/share/1D34Nvp3yB/?mibextid=wwXIfr" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+          <i class="fa-brands fa-facebook"></i>
+        </a>
+        <a href="https://www.instagram.com/_sinatraheadwear?igsh=MXd2aTVxZmVpcDVneg%3D%3D&utm_source=qr" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 SINATRA HEADWEAR. ALL RIGHTS RESERVED.</p>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

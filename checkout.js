@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     summaryContainer.innerHTML = cart.map(item => {
       const itemTotal = item.price * (item.quantity || 1);
       subtotal += itemTotal;
-      const itemImg = item.colorImage || item.image || 'images/IMG_9067.png';
+      const itemImg = item.colorImage || item.image || 'IMG_9067.png';
 
       return `
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding: 10px 0; color: #ddd;">
@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const city = cityInput ? cityInput.value.toLowerCase().trim() : "";
 
     const freeLocalAreas = [
-      "khayelitsha", "mitchells plain", "mfuleni", 
+      "khayelitsha", "harare", "makhaya", "village3", "mitchells plain", "mfuleni", 
       "mandalay", "blue downs", "kuils river", "philippi", "eyethu"
     ];
 
@@ -180,7 +180,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Store order details in LocalStorage
       const orderDetails = {
-        access_key: "0200f736-cd68-4ffa-aadc-55892755d561",
+        access_key: "pk_live_9d8e33e98oJOYEG4fc84",
         subject: `Paid Order [${paymentId}] - Sinatra Headwear`,
         from_name: "Sinatra Headwear Store",
         paymentId: paymentId,

@@ -13,6 +13,8 @@
 
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="checkout.css">
+
+  <script src="https://js.yoco.com/sdk/v1/yoco-sdk-web.js"></script>
 </head>
 <body>
 
@@ -137,12 +139,12 @@
 
         <div class="payment-options">
           <label class="payment-label active" style="display: flex; align-items: center; gap: 10px; padding: 15px; border: 1px solid #333; border-radius: 4px; background: #111; cursor: pointer;">
-            <input type="radio" name="payment" value="payfast" checked disabled>
-            <span>PayFast (Cards, Instant EFT, SnapScan, Zapper)</span>
+            <input type="radio" name="payment" value="yoco" checked>
+            <span>Yoco Secure Payment (Visa / Mastercard)</span>
           </label>
         </div>
 
-        <button type="submit" class="place-order-btn" style="width: 100%; margin-top: 20px;">PROCEED TO PAYFAST</button>
+        <button type="submit" id="payButton" class="place-order-btn" style="width: 100%; margin-top: 20px;">PAY VIA YOCO</button>
       </form>
     </div>
 
@@ -172,18 +174,6 @@
     </div>
 
   </section>
-
-  <form id="payfastForm" action="https://www.payfast.co.za/eng/process" method="POST" style="display: none;">
-    <input type="hidden" name="merchant_id" value="36103549">
-    <input type="hidden" name="merchant_key" value="ggfhprhhqczo9">
-    <input type="hidden" name="return_url" value="https://sinatraheadwear.com/success.html">
-    <input type="hidden" name="cancel_url" value="https://sinatraheadwear.com/checkout.html">
-    <input type="hidden" name="m_payment_id" id="pf_payment_id">
-    <input type="hidden" name="amount" id="pf_amount">
-    <input type="hidden" name="item_name" id="pf_item_name">
-    <input type="hidden" name="email_address" id="pf_email">
-    <input type="hidden" name="name_first" id="pf_first_name">
-  </form>
 
   <footer class="footer">
     <div class="footer-brand">

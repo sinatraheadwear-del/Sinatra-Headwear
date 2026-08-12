@@ -139,25 +139,46 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Form Submit Handler
+  // Form Submit Handler (Yoco Gateway)
   if (form) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
+      // Check if Yoco SDK is loaded properly
+      if (typeof window.YocoSDK === "undefined") {
+        alert("Unable to load payment gateway. Please check your internet connection and refresh the page.");
+        return;
+      }
+
       const submitBtn = form.querySelector('.place-order-btn');
       if (submitBtn) {
         submitBtn.disabled = true;
-        submitBtn.innerText = 'REDIRECTING TO PAYFAST...';
+        submitBtn.innerText = 'PROCESSING...';
       }
 
-      const totalAmount = (subtotal + shippingFee).toFixed(2);
+      const grandTotal = subtotal + shippingFee;
+      const amountInCents = Math.round(grandTotal * 100);
       const paymentId = 'SINATRA-' + Date.now();
+
+      if (amountInCents <= 0) {
+        alert("Your cart is empty or the order total is invalid.");
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'PAY VIA YOCO';
+        }
+        return;
+      }
+
+      // Initialize Yoco inside submit event to prevent undefined SDK errors
+      const yoco = new window.YocoSDK({
+        publicKey: 'pk_live_9d8e33e98oJOYEG4fc84'
+      });
 
       const cartSummaryText = cart.map(item => 
         `• ${item.name} (${item.color || 'Standard'}, ${item.size || 'One Size'}) x${item.quantity || 1} - R${item.price * (item.quantity || 1)}.00`
       ).join("\n");
 
-      // Save order details for success.html email dispatch
+      // Store order details in LocalStorage
       const orderDetails = {
         access_key: "0200f736-cd68-4ffa-aadc-55892755d561",
         subject: `Paid Order [${paymentId}] - Sinatra Headwear`,
@@ -175,20 +196,35 @@ document.addEventListener("DOMContentLoaded", () => {
         orderItems: cartSummaryText,
         subtotal: `R${subtotal}.00`,
         shippingFee: shippingFee === 0 ? 'FREE' : `R${shippingFee}.00`,
-        totalAmount: `R${totalAmount}`
+        totalAmount: `R${grandTotal.toFixed(2)}`
       };
 
       localStorage.setItem('pendingSinatraOrder', JSON.stringify(orderDetails));
 
-      // Fill hidden PayFast inputs
-      document.getElementById("pf_payment_id").value = paymentId;
-      document.getElementById("pf_amount").value = totalAmount;
-      document.getElementById("pf_item_name").value = "Sinatra Headwear Order";
-      document.getElementById("pf_email").value = orderDetails.email;
-      document.getElementById("pf_first_name").value = orderDetails.fullName;
-
-      // Submit PayFast Form
-      document.getElementById("payfastForm").submit();
+      // Launch Yoco Modal
+      yoco.showPopup({
+        amountInCents: amountInCents,
+        currency: 'ZAR',
+        name: 'Sinatra Headwear',
+        description: `Order ${paymentId}`,
+        customer: {
+          email: orderDetails.email,
+          name: orderDetails.fullName
+        },
+        callback: function (result) {
+          if (result.error) {
+            alert('Payment cancelled or failed: ' + result.error.message);
+            if (submitBtn) {
+              submitBtn.disabled = false;
+              submitBtn.innerText = 'PAY VIA YOCO';
+            }
+          } else {
+            localStorage.removeItem('sinatra_cart');
+            window.location.href = 'success.html';
+          }
+        }
+      });
     });
   }
 });
+

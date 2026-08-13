@@ -146,7 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Check if Yoco SDK is loaded properly
       if (typeof window.YocoSDK === "undefined") {
-        alert("Unable to load payment gateway. Please check your internet connection and refresh the page.");
+        alert("Unable to load payment gateway script. Please check your network connection or disable ad blockers.");
         return;
       }
 
@@ -169,63 +169,73 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Initialize Yoco inside submit event to prevent undefined SDK errors
-      const yoco = new window.YocoSDK({
-        publicKey: 'pk_live_9d8e33e98oJOYEG4fc84'
-        
-      });
+      try {
+        // Double-check your Yoco Public Key in your Yoco Dashboard!
+        const yoco = new window.YocoSDK({
+          publicKey: 'pk_live_YOUR_VALID_YOCO_KEY_HERE' 
+        });
 
-      const cartSummaryText = cart.map(item => 
-        `• ${item.name} (${item.color || 'Standard'}, ${item.size || 'One Size'}) x${item.quantity || 1} - R${item.price * (item.quantity || 1)}.00`
-      ).join("\n");
+        const cartSummaryText = cart.map(item => 
+          `• ${item.name} (${item.color || 'Standard'}, ${item.size || 'One Size'}) x${item.quantity || 1} - R${item.price * (item.quantity || 1)}.00`
+        ).join("\n");
 
-      // Store order details in LocalStorage
-      const orderDetails = {
-        access_key: "0200f736-cd68-4ffa-aadc-55892755d561",
-        subject: `Paid Order [${paymentId}] - Sinatra Headwear`,
-        from_name: "Sinatra Headwear Store",
-        paymentId: paymentId,
-        fullName: document.getElementById('fullName').value,
-        email: document.getElementById('email').value,
-        phone: document.getElementById('phone').value,
-        address: document.getElementById('address').value,
-        apartment: document.getElementById('apartment').value || 'N/A',
-        suburb: document.getElementById('suburb').value,
-        city: document.getElementById('city').value,
-        province: document.getElementById('province').value,
-        postalCode: document.getElementById('postalCode').value,
-        orderItems: cartSummaryText,
-        subtotal: `R${subtotal}.00`,
-        shippingFee: shippingFee === 0 ? 'FREE' : `R${shippingFee}.00`,
-        totalAmount: `R${grandTotal.toFixed(2)}`
-      };
+        // Safely extract input values
+        const getVal = (id) => {
+          const el = document.getElementById(id);
+          return el ? el.value : '';
+        };
 
-      localStorage.setItem('pendingSinatraOrder', JSON.stringify(orderDetails));
+        const orderDetails = {
+          subject: `Paid Order [${paymentId}] - Sinatra Headwear`,
+          paymentId: paymentId,
+          fullName: getVal('fullName'),
+          email: getVal('email'),
+          phone: getVal('phone'),
+          address: getVal('address'),
+          apartment: getVal('apartment') || 'N/A',
+          suburb: getVal('suburb'),
+          city: getVal('city'),
+          province: getVal('province'),
+          postalCode: getVal('postalCode'),
+          orderItems: cartSummaryText,
+          subtotal: `R${subtotal}.00`,
+          shippingFee: shippingFee === 0 ? 'FREE' : `R${shippingFee}.00`,
+          totalAmount: `R${grandTotal.toFixed(2)}`
+        };
 
-      // Launch Yoco Modal
-      yoco.showPopup({
-        amountInCents: amountInCents,
-        currency: 'ZAR',
-        name: 'Sinatra Headwear',
-        description: `Order ${paymentId}`,
-        customer: {
-          email: orderDetails.email,
-          name: orderDetails.fullName
-        },
-        callback: function (result) {
-          if (result.error) {
-            alert('Payment cancelled or failed: ' + result.error.message);
-            if (submitBtn) {
-              submitBtn.disabled = false;
-              submitBtn.innerText = 'PAY VIA YOCO';
+        localStorage.setItem('pendingSinatraOrder', JSON.stringify(orderDetails));
+
+        // Launch Yoco Modal
+        yoco.showPopup({
+          amountInCents: amountInCents,
+          currency: 'ZAR',
+          name: 'Sinatra Headwear',
+          description: `Order ${paymentId}`,
+          customer: {
+            email: orderDetails.email,
+            name: orderDetails.fullName
+          },
+          callback: function (result) {
+            if (result.error) {
+              alert('Payment cancelled or failed: ' + result.error.message);
+              if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'PAY VIA YOCO';
+              }
+            } else {
+              localStorage.removeItem('sinatra_cart');
+              window.location.href = 'success.html';
             }
-          } else {
-            localStorage.removeItem('sinatra_cart');
-            window.location.href = 'success.html';
           }
+        });
+      } catch (err) {
+        console.error("Yoco Error:", err);
+        alert("Failed to initialize payment popup. Please verify your Yoco API key.");
+        if (submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.innerText = 'PAY VIA YOCO';
         }
-      });
+      }
     });
   }
 });
-

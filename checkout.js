@@ -172,6 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Initialize Yoco inside submit event to prevent undefined SDK errors
       const yoco = new window.YocoSDK({
         publicKey: 'pk_live_9d8e33e98oJOYEG4fc84'
+        
       });
 
       const cartSummaryText = cart.map(item => 
@@ -180,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Store order details in LocalStorage
       const orderDetails = {
-        access_key: "pk_live_9d8e33e98oJOYEG4fc84",
+        access_key: "0200f736-cd68-4ffa-aadc-55892755d561",
         subject: `Paid Order [${paymentId}] - Sinatra Headwear`,
         from_name: "Sinatra Headwear Store",
         paymentId: paymentId,

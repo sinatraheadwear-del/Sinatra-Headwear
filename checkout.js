@@ -172,7 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         // Double-check your Yoco Public Key in your Yoco Dashboard!
         const yoco = new window.YocoSDK({
-          publicKey: 'pk_live_YOUR_VALID_YOCO_KEY_HERE' 
+          publicKey: 'pk_live_9d8e33e98oJOYEG4fc84' 
         });
 
         const cartSummaryText = cart.map(item => 

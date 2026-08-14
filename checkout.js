@@ -1,5 +1,3 @@
-CHECKOUT JS
-
 // STORE DISPATCH COORDINATES: Khayelitsha, Cape Town
 const STORE_COORDS = { lat: -34.02621, lng: 18.66644 };
 let shippingFee = 60; // Standard local delivery fee R60

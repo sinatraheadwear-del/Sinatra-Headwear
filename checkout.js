@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const city = cityInput ? cityInput.value.toLowerCase().trim() : "";
 
     const freeLocalAreas = [
-      "khayelitsha", “harare”, “mandela park”, “makhaza”, “kuyasa”, "mitchells plain", "mfuleni", 
+      "khayelitsha", "harare", "mandela park", "makhaza", "kuyasa", "mitchells plain", "mfuleni", 
       "mandalay", "blue downs", "kuils river", "philippi", "eyethu"
     ];
 

@@ -1,8 +1,8 @@
 const crypto = require("crypto");
 
-const MERCHANT_ID = "10000100";
-const MERCHANT_KEY = "46f0cd694581a";
-const PASSPHRASE = "jt7NOE43FZPn";
+const MERCHANT_ID = "10051196";
+const MERCHANT_KEY = "e2ser1486yopm";
+const PASSPHRASE = "thisissinatraheadwear2009";
 
 // PUT YOUR WEB3FORMS ACCESS KEY HERE
 const WEB3FORMS_ACCESS_KEY ="0200f736-cd68-4ffa-aadc-55892755d561";

@@ -174,10 +174,7 @@ module.exports = async function handler(req, res) {
 
     const data = parseForm(rawBody);
 
-    console.log(
-      "PAYFAST SANDBOX ITN RECEIVED:",
-      data
-    );
+    console.log("PAYFAST MERCHANT ID RECEIVED:", data.merchant_id);
 
     // 1. Merchant check
     if (data.merchant_id !== MERCHANT_ID) {

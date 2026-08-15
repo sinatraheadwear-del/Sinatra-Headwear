@@ -46,7 +46,7 @@ document.addEventListener("DOMContentLoaded", () => {
     summaryContainer.innerHTML = cart.map(item => {
       const itemTotal = item.price * (item.quantity || 1);
       subtotal += itemTotal;
-      const itemImg = item.colorImage || item.image || 'images/IMG_9067.png';
+      const itemImg = item.colorImage || item.image || 'IMG_9067.png';
 
       return `
         <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #222; padding: 10px 0; color: #ddd;">

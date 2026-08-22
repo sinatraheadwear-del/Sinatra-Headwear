@@ -5,20 +5,16 @@ const MERCHANT_ID =
   process.env.PAYFAST_MERCHANT_ID;
 
 const PASSPHRASE =
-  process.env.PAYFAST_PASSPHRASE ||
-  "";
+  process.env.PAYFAST_PASSPHRASE || "";
 
 function readBody(req) {
-
   return new Promise(
     (resolve, reject) => {
-
       let body = "";
 
       req.on(
         "data",
         chunk => {
-
           body +=
             chunk.toString();
         }
@@ -39,7 +35,6 @@ function readBody(req) {
 }
 
 function parseForm(body) {
-
   const params =
     new URLSearchParams(
       body
@@ -51,7 +46,6 @@ function parseForm(body) {
     const [key, value]
     of params.entries()
   ) {
-
     data[key] =
       value;
   }
@@ -60,80 +54,85 @@ function parseForm(body) {
 }
 
 function encodeValue(value) {
-
   return encodeURIComponent(
-    String(value).trim()
-  ).replace(
-    /%20/g,
-    "+"
+    String(value)
+  )
+    .replace(/%20/g, "+")
+    .replace(/!/g, "%21")
+    .replace(/'/g, "%27")
+    .replace(/\(/g, "%28")
+    .replace(/\)/g, "%29")
+    .replace(/\*/g, "%2A");
+}
+
+function createItnParameterString(
+  data
+) {
+  let output = "";
+
+  for (
+    const [key, value]
+    of Object.entries(data)
+  ) {
+    if (
+      key ===
+      "signature"
+    ) {
+      break;
+    }
+
+    if (
+      value !== ""
+    ) {
+      output +=
+        `${key}=` +
+        `${encodeValue(value)}&`;
+    }
+  }
+
+  return output.slice(
+    0,
+    -1
   );
 }
 
-function generateSignature(
-  data
-) {
-
-  const parts = [];
-
-  for (
-    const [key, value]
-    of Object.entries(data)
+function checkSignature(data) {
+  if (
+    !data.signature
   ) {
-
-    if (
-      key === "signature"
-    ) {
-      continue;
-    }
-
-    if (
-      value === ""
-    ) {
-      continue;
-    }
-
-    parts.push(
-      `${key}=${encodeValue(
-        value
-      )}`
-    );
+    return false;
   }
+
+  let parameterString =
+    createItnParameterString(
+      data
+    );
 
   if (PASSPHRASE) {
-
-    parts.push(
-      `passphrase=${encodeValue(
+    parameterString +=
+      "&passphrase=" +
+      encodeValue(
         PASSPHRASE
-      )}`
-    );
+      );
   }
 
-  return crypto
-    .createHash("md5")
-    .update(
-      parts.join("&")
-    )
-    .digest("hex");
+  const expectedSignature =
+    crypto
+      .createHash("md5")
+      .update(
+        parameterString
+      )
+      .digest("hex");
+
+  return (
+    expectedSignature ===
+    data.signature
+  );
 }
 
-async function validatePayFast(
-  data
+async function validateWithPayFast(
+  rawBody
 ) {
-
-  const params =
-    new URLSearchParams();
-
-  for (
-    const [key, value]
-    of Object.entries(data)
-  ) {
-
-    params.append(
-      key,
-      value
-    );
-  }
-
   const response =
     await fetch(
       "https://www.payfast.co.za/eng/query/validate",
@@ -147,7 +146,7 @@ async function validatePayFast(
         },
 
         body:
-          params.toString()
+          rawBody
       }
     );
 
@@ -165,12 +164,10 @@ module.exports =
     req,
     res
   ) {
-
     if (
       req.method !==
       "POST"
     ) {
-
       return res
         .status(405)
         .send(
@@ -179,18 +176,16 @@ module.exports =
     }
 
     try {
-
       const rawBody =
         await readBody(
           req
         );
 
       if (!rawBody) {
-
         return res
           .status(400)
           .send(
-            "Empty request"
+            "Empty Request"
           );
       }
 
@@ -200,7 +195,7 @@ module.exports =
         );
 
       console.log(
-        "LIVE PAYFAST ITN:",
+        "LIVE PAYFAST ITN RECEIVED:",
         {
           order:
             data.m_payment_id,
@@ -219,20 +214,18 @@ module.exports =
         }
       );
 
-      // Merchant check
-
       if (
-        MERCHANT_ID &&
         String(
-          data.merchant_id
+          data.merchant_id ||
+          ""
         ) !==
-          String(
-            MERCHANT_ID
-          )
+        String(
+          MERCHANT_ID ||
+          ""
+        )
       ) {
-
         console.error(
-          "Invalid merchant ID"
+          "Invalid Merchant ID"
         );
 
         return res
@@ -242,20 +235,13 @@ module.exports =
           );
       }
 
-      // Signature check
-
-      const expectedSignature =
-        generateSignature(
-          data
-        );
-
       if (
-        data.signature !==
-        expectedSignature
+        !checkSignature(
+          data
+        )
       ) {
-
         console.error(
-          "Invalid signature"
+          "Invalid PayFast Signature"
         );
 
         return res
@@ -265,15 +251,12 @@ module.exports =
           );
       }
 
-      // Confirm with PayFast
-
       const valid =
-        await validatePayFast(
-          data
+        await validateWithPayFast(
+          rawBody
         );
 
       if (!valid) {
-
         console.error(
           "PayFast validation failed"
         );
@@ -289,7 +272,6 @@ module.exports =
         data.payment_status !==
         "COMPLETE"
       ) {
-
         console.log(
           "Payment not complete:",
           data.payment_status
@@ -298,21 +280,25 @@ module.exports =
         return res
           .status(200)
           .send(
-            "Payment Not Complete"
+            "OK"
           );
       }
 
-      const amount =
+      const amountGross =
         Number(
           data.amount_gross
         );
 
       if (
         !Number.isFinite(
-          amount
+          amountGross
         ) ||
-        amount <= 0
+        amountGross < 5
       ) {
+        console.error(
+          "Invalid amount:",
+          data.amount_gross
+        );
 
         return res
           .status(400)
@@ -321,15 +307,12 @@ module.exports =
           );
       }
 
-      // FULL ORDER DETAILS
-      // are now available here.
-
       console.log(
-        "========================"
+        "=============================="
       );
 
       console.log(
-        "SINATRA ORDER PAID"
+        "LIVE SINATRA PAYMENT VERIFIED"
       );
 
       console.log(
@@ -338,13 +321,14 @@ module.exports =
       );
 
       console.log(
-        "PayFast:",
+        "PayFast ID:",
         data.pf_payment_id
       );
 
       console.log(
         "Customer:",
-        data.name_first
+        data.name_first,
+        data.name_last
       );
 
       console.log(
@@ -363,12 +347,12 @@ module.exports =
       );
 
       console.log(
-        "Area:",
+        "Suburb / City:",
         data.custom_str3
       );
 
       console.log(
-        "Province:",
+        "Province / Postal:",
         data.custom_str4
       );
 
@@ -383,20 +367,22 @@ module.exports =
       );
 
       console.log(
-        "Amount paid:",
+        "Amount Paid:",
         data.amount_gross
       );
 
       console.log(
-        "========================"
+        "=============================="
       );
 
+      // Successful PayFast acknowledgement.
       return res
         .status(200)
-        .send("OK");
+        .send(
+          "OK"
+        );
 
     } catch (error) {
-
       console.error(
         "PayFast ITN error:",
         error

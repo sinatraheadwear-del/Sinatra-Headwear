@@ -97,7 +97,7 @@
   </div>
 
   <script>
-document.addEventListener("DOMContentLoaded", async () => {
+  document.addEventListener("DOMContentLoaded", async () => {
   const statusMsg = document.getElementById("statusMsg");
   const pendingOrder = localStorage.getItem("pendingSinatraOrder");
 
@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const orderData = JSON.parse(pendingOrder);
 
     const web3FormData = {
-      access_key: "YOUR_WEB3FORMS_ACCESS_KEY",
+      access_key: "0200f736-cd68-4ffa-aadc-55892755d561",
 
       subject:
         `Paid Order [${orderData.paymentId}] - Sinatra Headwear`,

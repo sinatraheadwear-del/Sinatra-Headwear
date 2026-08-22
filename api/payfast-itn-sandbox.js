@@ -145,25 +145,17 @@ async function validatePayFast(
   );
 }
 
-module.exports =
-  async function handler(
-    req,
-    res
-  ) {
+module.exports = async function handler(req, res) {
+  if (req.method !== "POST") {
+    return res.status(405).send("Method Not Allowed");
+  }
 
-    if (
-      req.method !==
-      "POST"
-    ) {
+  // PayFast expects an immediate 200 OK acknowledgement
+  res.status(200);
+  res.setHeader("Content-Type", "text/plain");
+  res.write("OK");
 
-      return res
-        .status(405)
-        .send(
-          "Method Not Allowed"
-        );
-    }
-
-    try {
+  try {
 
       const rawBody =
         await readBody(

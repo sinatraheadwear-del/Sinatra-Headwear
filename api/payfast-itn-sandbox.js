@@ -1,270 +1,357 @@
-const crypto = require("crypto");
+const crypto =
+  require("crypto");
 
-const MERCHANT_ID = "10051196";
-const MERCHANT_KEY = "e2ser1486yopm";
-const PASSPHRASE = "thisissinatraheadwear2009";
+const MERCHANT_ID =
+  "10051196";
 
-// PUT YOUR WEB3FORMS ACCESS KEY HERE
-const WEB3FORMS_ACCESS_KEY ="0200f736-cd68-4ffa-aadc-55892755d561";
+const PASSPHRASE =
+  process.env
+    .PAYFAST_SANDBOX_PASSPHRASE ||
+  "";
 
 function readBody(req) {
-  return new Promise((resolve, reject) => {
-    let body = "";
 
-    req.on("data", chunk => {
-      body += chunk.toString();
-    });
+  return new Promise(
+    (resolve, reject) => {
 
-    req.on("end", () => resolve(body));
-    req.on("error", reject);
-  });
+      let body = "";
+
+      req.on(
+        "data",
+        chunk => {
+
+          body +=
+            chunk.toString();
+        }
+      );
+
+      req.on(
+        "end",
+        () =>
+          resolve(body)
+      );
+
+      req.on(
+        "error",
+        reject
+      );
+    }
+  );
 }
 
 function parseForm(body) {
-  const params = new URLSearchParams(body);
+
+  const params =
+    new URLSearchParams(
+      body
+    );
+
   const data = {};
 
-  for (const [key, value] of params.entries()) {
-    data[key] = value;
+  for (
+    const [key, value]
+    of params.entries()
+  ) {
+
+    data[key] =
+      value;
   }
 
   return data;
 }
 
-function generateSignature(data) {
-  let parameterString = "";
+function encodeValue(value) {
 
-  for (const [key, value] of Object.entries(data)) {
-    if (key === "signature") continue;
+  return encodeURIComponent(
+    String(value).trim()
+  ).replace(
+    /%20/g,
+    "+"
+  );
+}
 
-    if (value !== "") {
-      parameterString +=
-        key + "=" +
-        encodeURIComponent(String(value).trim()) +
-        "&";
+function generateSignature(
+  data
+) {
+
+  const parts = [];
+
+  for (
+    const [key, value]
+    of Object.entries(data)
+  ) {
+
+    if (
+      key === "signature"
+    ) {
+      continue;
     }
+
+    if (
+      value === ""
+    ) {
+      continue;
+    }
+
+    parts.push(
+      `${key}=${encodeValue(
+        value
+      )}`
+    );
   }
 
-  parameterString = parameterString.slice(0, -1);
+  if (PASSPHRASE) {
 
-  parameterString +=
-    "&passphrase=" +
-    encodeURIComponent(PASSPHRASE);
+    parts.push(
+      `passphrase=${encodeValue(
+        PASSPHRASE
+      )}`
+    );
+  }
 
   return crypto
     .createHash("md5")
-    .update(parameterString)
+    .update(
+      parts.join("&")
+    )
     .digest("hex");
 }
 
-async function validateWithPayFast(data) {
-  const params = new URLSearchParams();
+async function validatePayFast(
+  data
+) {
 
-  for (const [key, value] of Object.entries(data)) {
-    params.append(key, value);
+  const params =
+    new URLSearchParams();
+
+  for (
+    const [key, value]
+    of Object.entries(data)
+  ) {
+
+    params.append(
+      key,
+      value
+    );
   }
 
-  const response = await fetch(
-    "https://sandbox.payfast.co.za/eng/query/validate",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type":
-          "application/x-www-form-urlencoded"
-      },
-      body: params.toString()
-    }
+  const response =
+    await fetch(
+      "https://sandbox.payfast.co.za/eng/query/validate",
+      {
+        method:
+          "POST",
+
+        headers: {
+          "Content-Type":
+            "application/x-www-form-urlencoded"
+        },
+
+        body:
+          params.toString()
+      }
+    );
+
+  const result =
+    await response.text();
+
+  return (
+    result.trim() ===
+    "VALID"
   );
-
-  const result = await response.text();
-
-  return result.trim() === "VALID";
 }
 
-async function sendOrderEmail(data) {
-
-  const orderNumber =
-    data.m_payment_id || "Unknown";
-
-  const customerName =
-    `${data.name_first || ""} ${data.name_last || ""}`.trim();
-
-  const emailData = {
-    access_key: WEB3FORMS_ACCESS_KEY,
-
-    subject:
-      `NEW SINATRA HEADWEAR ORDER - ${orderNumber}`,
-
-    from_name:
-      "Sinatra Headwear",
-
-    name:
-      customerName || "Customer",
-
-    email:
-      data.email_address || "",
-
-    message: `
-NEW SINATRA HEADWEAR ORDER
-==========================
-
-Order Number:
-${orderNumber}
-
-PayFast Payment ID:
-${data.pf_payment_id || "N/A"}
-
-Payment Status:
-${data.payment_status || "N/A"}
-
-Amount Paid:
-R${data.amount_gross || "0.00"}
-
-CUSTOMER
---------
-Name:
-${customerName}
-
-Email:
-${data.email_address || "N/A"}
-
-Phone:
-${data.cell_number || "N/A"}
-
-ORDER
------
-Item:
-${data.item_name || "Sinatra Headwear Order"}
-
-==========================
-This order was verified through PayFast Sandbox.
-`
-  };
-
-  const response = await fetch(
-    "https://api.web3forms.com/submit",
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json"
-      },
-      body: JSON.stringify(emailData)
-    }
-  );
-
-  const result = await response.json();
-
-  console.log("Web3Forms response:", result);
-
-  return response.ok;
-}
-
-module.exports = async function handler(req, res) {
-
-  if (req.method !== "POST") {
-    return res
-      .status(405)
-      .send("Method Not Allowed");
-  }
-
-  try {
-
-    const rawBody = await readBody(req);
-
-    const data = parseForm(rawBody);
-
-    console.log("PAYFAST MERCHANT ID RECEIVED:", data.merchant_id);
-
-    // 1. Merchant check
-    if (data.merchant_id !== MERCHANT_ID) {
-      return res
-        .status(400)
-        .send("Invalid Merchant ID");
-    }
-
-    // 2. Signature check
-    const expectedSignature =
-      generateSignature(data);
+module.exports =
+  async function handler(
+    req,
+    res
+  ) {
 
     if (
-      data.signature !== expectedSignature
+      req.method !==
+      "POST"
     ) {
-      console.error(
-        "Invalid PayFast signature"
-      );
 
       return res
-        .status(400)
-        .send("Invalid Signature");
+        .status(405)
+        .send(
+          "Method Not Allowed"
+        );
     }
 
-    // 3. PayFast server validation
-    const valid =
-      await validateWithPayFast(data);
+    try {
 
-    if (!valid) {
-      console.error(
-        "PayFast validation failed"
-      );
+      const rawBody =
+        await readBody(
+          req
+        );
 
-      return res
-        .status(400)
-        .send("Validation Failed");
-    }
+      const data =
+        parseForm(
+          rawBody
+        );
 
-    // 4. Payment status
-    if (
-      data.payment_status !== "COMPLETE"
-    ) {
       console.log(
-        "Payment status:",
-        data.payment_status
+        "SANDBOX ITN:",
+        {
+          order:
+            data.m_payment_id,
+
+          payment:
+            data.pf_payment_id,
+
+          status:
+            data.payment_status,
+
+          item:
+            data.item_name
+        }
+      );
+
+      if (
+        String(
+          data.merchant_id
+        ) !==
+        String(
+          MERCHANT_ID
+        )
+      ) {
+
+        return res
+          .status(400)
+          .send(
+            "Invalid Merchant ID"
+          );
+      }
+
+      const expectedSignature =
+        generateSignature(
+          data
+        );
+
+      if (
+        data.signature !==
+        expectedSignature
+      ) {
+
+        console.error(
+          "Invalid Sandbox Signature"
+        );
+
+        return res
+          .status(400)
+          .send(
+            "Invalid Signature"
+          );
+      }
+
+      const valid =
+        await validatePayFast(
+          data
+        );
+
+      if (!valid) {
+
+        console.error(
+          "Sandbox validation failed"
+        );
+
+        return res
+          .status(400)
+          .send(
+            "Validation Failed"
+          );
+      }
+
+      if (
+        data.payment_status !==
+        "COMPLETE"
+      ) {
+
+        return res
+          .status(200)
+          .send(
+            "Payment Not Complete"
+          );
+      }
+
+      console.log(
+        "========================"
+      );
+
+      console.log(
+        "SANDBOX ORDER VERIFIED"
+      );
+
+      console.log(
+        "Order:",
+        data.m_payment_id
+      );
+
+      console.log(
+        "Customer:",
+        data.name_first
+      );
+
+      console.log(
+        "Email:",
+        data.email_address
+      );
+
+      console.log(
+        "Phone:",
+        data.custom_str1
+      );
+
+      console.log(
+        "Address:",
+        data.custom_str2
+      );
+
+      console.log(
+        "Suburb / City:",
+        data.custom_str3
+      );
+
+      console.log(
+        "Province:",
+        data.custom_str4
+      );
+
+      console.log(
+        "Totals:",
+        data.custom_str5
+      );
+
+      console.log(
+        "Products:",
+        data.item_description
+      );
+
+      console.log(
+        "Amount:",
+        data.amount_gross
+      );
+
+      console.log(
+        "========================"
       );
 
       return res
         .status(200)
-        .send("Payment Not Complete");
-    }
+        .send("OK");
 
-    // 5. PAYMENT VERIFIED
-    console.log(
-      "PAYMENT VERIFIED:",
-      data.m_payment_id
-    );
+    } catch (error) {
 
-    // 6. SEND ORDER EMAIL
-    const emailSent =
-      await sendOrderEmail(data);
-
-    if (!emailSent) {
       console.error(
-        "Order email failed"
+        "Sandbox ITN error:",
+        error
       );
 
-      // Payment itself is still valid.
       return res
-        .status(200)
-        .send("Payment Verified - Email Failed");
+        .status(500)
+        .send(
+          "Server Error"
+        );
     }
-
-    console.log(
-      "ORDER EMAIL SENT SUCCESSFULLY"
-    );
-
-    return res
-      .status(200)
-      .send("OK");
-
-  } catch (error) {
-
-    console.error(
-      "ITN ERROR:",
-      error
-    );
-
-    return res
-      .status(500)
-      .send("Server Error");
-  }
-};
+  };

@@ -97,6 +97,110 @@
   </div>
 
   <script>
+document.addEventListener("DOMContentLoaded", async () => {
+  const statusMsg = document.getElementById("statusMsg");
+  const pendingOrder = localStorage.getItem("pendingSinatraOrder");
+
+  if (!pendingOrder) {
+    statusMsg.innerHTML =
+      "Thank you for shopping with Sinatra Headwear!";
+    return;
+  }
+
+  try {
+    const orderData = JSON.parse(pendingOrder);
+
+    const web3FormData = {
+      access_key: "YOUR_WEB3FORMS_ACCESS_KEY",
+
+      subject:
+        `Paid Order [${orderData.paymentId}] - Sinatra Headwear`,
+
+      from_name:
+        "Sinatra Headwear Store",
+
+      PaymentId:
+        orderData.paymentId,
+
+      FullName:
+        orderData.fullName,
+
+      Email:
+        orderData.email,
+
+      Phone:
+        orderData.phone,
+
+      Address:
+        orderData.address,
+
+      Apartment:
+        orderData.apartment,
+
+      Suburb:
+        orderData.suburb,
+
+      City:
+        orderData.city,
+
+      Province:
+        orderData.province,
+
+      PostalCode:
+        orderData.postalCode,
+
+      OrderItems:
+        orderData.orderItems,
+
+      Subtotal:
+        orderData.subtotal,
+
+      ShippingFee:
+        orderData.shippingFee,
+
+      TotalAmount:
+        orderData.totalAmount
+    };
+
+    const response = await fetch(
+      "https://api.web3forms.com/submit",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify(web3FormData)
+      }
+    );
+
+    const result = await response.json();
+
+    console.log("Web3Forms:", result);
+
+    if (response.ok && result.success) {
+      statusMsg.innerHTML =
+        "Thank you! Your payment was successful and your order has been received.";
+
+      localStorage.removeItem("pendingSinatraOrder");
+      localStorage.removeItem("sinatra_cart");
+
+    } else {
+      statusMsg.innerHTML =
+        "Payment successful, but the order notification failed.";
+
+      console.error("Web3Forms error:", result);
+    }
+
+  } catch (error) {
+    console.error("Order email error:", error);
+
+    statusMsg.innerHTML =
+      "Payment successful, but there was a problem sending the order notification.";
+  }
+});
+
+  
 
     document.addEventListener(
       "DOMContentLoaded",

@@ -61,59 +61,43 @@ function parseForm(body) {
 }
 
 function encodeValue(value) {
-
-  return encodeURIComponent(
-    String(value).trim()
-  ).replace(
-    /%20/g,
-    "+"
-  );
+  return encodeURIComponent(String(value))
+    .replace(/%20/g, "+");
 }
 
-function generateSignature(
-  data
-) {
+function generateSignature(data) {
+  let parameterString = "";
 
-  const parts = [];
+  for (const [key, value] of Object.entries(data)) {
 
-  for (
-    const [key, value]
-    of Object.entries(data)
-  ) {
-
-    if (
-      key === "signature"
-    ) {
-      continue;
+    // IMPORTANT:
+    // PayFast says stop when the signature field is reached.
+    if (key === "signature") {
+      break;
     }
 
-    if (
-      value === ""
-    ) {
-      continue;
+    if (value !== "") {
+      parameterString +=
+        key +
+        "=" +
+        encodeValue(value) +
+        "&";
     }
-
-    parts.push(
-      `${key}=${encodeValue(
-        value
-      )}`
-    );
   }
 
-  if (PASSPHRASE) {
+  // Remove final &
+  parameterString =
+    parameterString.slice(0, -1);
 
-    parts.push(
-      `passphrase=${encodeValue(
-        PASSPHRASE
-      )}`
-    );
+  if (PASSPHRASE) {
+    parameterString +=
+      "&passphrase=" +
+      encodeValue(PASSPHRASE);
   }
 
   return crypto
     .createHash("md5")
-    .update(
-      parts.join("&")
-    )
+    .update(parameterString)
     .digest("hex");
 }
 

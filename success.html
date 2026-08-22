@@ -2,7 +2,6 @@
 <html lang="en">
 
 <head>
-
   <meta charset="UTF-8">
 
   <meta
@@ -11,15 +10,13 @@
   >
 
   <title>
-    Payment Successful |
-    Sinatra Headwear
+    Payment Successful | Sinatra Headwear
   </title>
 
   <link
     rel="stylesheet"
     href="style.css"
   >
-
 </head>
 
 <body
@@ -42,7 +39,6 @@
       background:#111;
     "
   >
-
     <div
       style="
         font-size:3rem;
@@ -73,8 +69,7 @@
         line-height:1.5;
       "
     >
-      Thank you for your order.
-      Your payment was successful.
+      Confirming your order...
     </p>
 
     <a
@@ -93,131 +88,23 @@
     >
       RETURN TO HOME
     </a>
-
   </div>
 
   <script>
-  document.addEventListener("DOMContentLoaded", async () => {
-  const statusMsg = document.getElementById("statusMsg");
-  const pendingOrder = localStorage.getItem("pendingSinatraOrder");
-
-  if (!pendingOrder) {
-    statusMsg.innerHTML =
-      "Thank you for shopping with Sinatra Headwear!";
-    return;
-  }
-
-  try {
-    const orderData = JSON.parse(pendingOrder);
-
-    const web3FormData = {
-      access_key: "0200f736-cd68-4ffa-aadc-55892755d561",
-
-      subject:
-        `Paid Order [${orderData.paymentId}] - Sinatra Headwear`,
-
-      from_name:
-        "Sinatra Headwear Store",
-
-      PaymentId:
-        orderData.paymentId,
-
-      FullName:
-        orderData.fullName,
-
-      Email:
-        orderData.email,
-
-      Phone:
-        orderData.phone,
-
-      Address:
-        orderData.address,
-
-      Apartment:
-        orderData.apartment,
-
-      Suburb:
-        orderData.suburb,
-
-      City:
-        orderData.city,
-
-      Province:
-        orderData.province,
-
-      PostalCode:
-        orderData.postalCode,
-
-      OrderItems:
-        orderData.orderItems,
-
-      Subtotal:
-        orderData.subtotal,
-
-      ShippingFee:
-        orderData.shippingFee,
-
-      TotalAmount:
-        orderData.totalAmount
-    };
-
-    const response = await fetch(
-      "https://api.web3forms.com/submit",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify(web3FormData)
-      }
-    );
-
-    const result = await response.json();
-
-    console.log("Web3Forms:", result);
-
-    if (response.ok && result.success) {
-      statusMsg.innerHTML =
-        "Thank you! Your payment was successful and your order has been received.";
-
-      localStorage.removeItem("pendingSinatraOrder");
-      localStorage.removeItem("sinatra_cart");
-
-    } else {
-      statusMsg.innerHTML =
-        "Payment successful, but the order notification failed.";
-
-      console.error("Web3Forms error:", result);
-    }
-
-  } catch (error) {
-    console.error("Order email error:", error);
-
-    statusMsg.innerHTML =
-      "Payment successful, but there was a problem sending the order notification.";
-  }
-});
-
-  
-
     document.addEventListener(
       "DOMContentLoaded",
       async () => {
-
         const statusMsg =
           document.getElementById(
             "statusMsg"
           );
 
-        const storedOrder =
+        const pendingOrder =
           localStorage.getItem(
             "pendingSinatraOrder"
           );
 
-        if (!storedOrder) {
-
+        if (!pendingOrder) {
           statusMsg.innerHTML =
             "Thank you for shopping with Sinatra Headwear!";
 
@@ -225,102 +112,72 @@
         }
 
         try {
-
-          const order =
+          const orderData =
             JSON.parse(
-              storedOrder
+              pendingOrder
             );
 
-          const message =
-`
-NEW SINATRA HEADWEAR ORDER
-==============================
-
-ORDER NUMBER
-${order.paymentId}
-
-CUSTOMER
-------------------------------
-Name: ${order.fullName}
-Email: ${order.email}
-Phone: ${order.phone}
-
-DELIVERY ADDRESS
-------------------------------
-Street:
-${order.address}
-
-Apartment / Unit:
-${order.apartment}
-
-Suburb:
-${order.suburb}
-
-City:
-${order.city}
-
-Province:
-${order.province}
-
-Postal Code:
-${order.postalCode}
-
-ORDER ITEMS
-------------------------------
-${order.orderItems}
-
-PAYMENT
-------------------------------
-Subtotal:
-${order.subtotal}
-
-Shipping:
-${order.shippingFee}
-
-TOTAL PAID:
-${order.totalAmount}
-
-Payment Method:
-PayFast
-
-==============================
-Sinatra Headwear
-`;
-
-          const emailData = {
-
-            // Use your current Web3Forms key here.
-            // You can also restrict this key to
-            // sinatraheadwear.com inside Web3Forms.
-
+          const web3FormData = {
             access_key:
               "0200f736-cd68-4ffa-aadc-55892755d561",
 
             subject:
-              `NEW PAID ORDER - ${order.paymentId}`,
+              `Paid Order [${orderData.paymentId}] - Sinatra Headwear`,
 
             from_name:
-              "Sinatra Headwear Orders",
+              "Sinatra Headwear Store",
 
-            name:
-              order.fullName,
+            PaymentId:
+              orderData.paymentId,
 
-            email:
-              order.email,
+            FullName:
+              orderData.fullName,
 
-            message
+            Email:
+              orderData.email,
+
+            Phone:
+              orderData.phone,
+
+            Address:
+              orderData.address,
+
+            Apartment:
+              orderData.apartment,
+
+            Suburb:
+              orderData.suburb,
+
+            City:
+              orderData.city,
+
+            Province:
+              orderData.province,
+
+            PostalCode:
+              orderData.postalCode,
+
+            OrderItems:
+              orderData.orderItems,
+
+            Subtotal:
+              orderData.subtotal,
+
+            ShippingFee:
+              orderData.shippingFee,
+
+            TotalAmount:
+              orderData.totalAmount
           };
 
           const response =
             await fetch(
               "https://api.web3forms.com/submit",
               {
-
                 method:
                   "POST",
 
                 headers: {
-
                   "Content-Type":
                     "application/json",
 
@@ -330,7 +187,7 @@ Sinatra Headwear
 
                 body:
                   JSON.stringify(
-                    emailData
+                    web3FormData
                   )
               }
             );
@@ -339,7 +196,7 @@ Sinatra Headwear
             await response.json();
 
           console.log(
-            "Order email:",
+            "Web3Forms:",
             result
           );
 
@@ -347,44 +204,37 @@ Sinatra Headwear
             response.ok &&
             result.success
           ) {
-
             statusMsg.innerHTML =
               "Thank you! Your payment was successful and your order has been received.";
 
+            localStorage.removeItem(
+              "pendingSinatraOrder"
+            );
+
+            localStorage.removeItem(
+              "sinatra_cart"
+            );
           } else {
-
-            statusMsg.innerHTML =
-              "Thank you! Your payment was successful and your order has been received.";
-
             console.error(
               "Web3Forms error:",
               result
             );
+
+            statusMsg.innerHTML =
+              "Your payment was successful. We received your order, but the order email could not be sent automatically.";
           }
 
         } catch (error) {
-
           console.error(
             "Order notification error:",
             error
           );
 
           statusMsg.innerHTML =
-            "Thank you! Your payment was successful and your order has been received.";
-
-        } finally {
-
-          localStorage.removeItem(
-            "pendingSinatraOrder"
-          );
-
-          localStorage.removeItem(
-            "sinatra_cart"
-          );
+            "Your payment was successful. There was a problem sending the order notification.";
         }
       }
     );
-
   </script>
 
 </body>

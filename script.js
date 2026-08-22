@@ -44,11 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
       image: "IMG_9067.png",
       colors: ["Black", "Grey"],
       colorImages: {
-        "Black": "IMG_9067.png",
-        "Grey": "IMG_9081.png"
+        "Black": "IMG_9081.png",
+        "Grey": "IMG_9067.png"
       },
       sizes: ["One Size"],
-      stock: 5,
+      stock: 20,
       inStock: true
     },
     { 

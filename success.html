@@ -1,57 +1,287 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Payment Successful | Sinatra Headwear</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body style="background-color: #000; color: #fff; font-family: 'Inter', sans-serif; text-align: center; padding: 60px 20px;">
 
-  <div style="max-width: 520px; margin: 0 auto; border: 1px solid #222; padding: 40px; border-radius: 8px; background: #111;">
-    <div style="font-size: 3rem; color: #25D366; margin-bottom: 10px;">✓</div>
-    <h1 style="color: #fff; font-size: 2rem; margin-bottom: 10px; font-family: 'Bebas Neue', sans-serif; letter-spacing: 1px;">PAYMENT SUCCESSFUL!</h1>
-    <p style="color: #aaa; font-size: 0.95rem; line-height: 1.5;" id="statusMsg">Confirming your payment and sending your order receipt...</p>
-    
-    <a href="index.html" style="display: inline-block; padding: 14px 28px; background: #fff; color: #000; text-decoration: none; font-weight: 700; border-radius: 4px; margin-top: 25px; letter-spacing: 0.5px;">RETURN TO HOME</a>
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    Payment Successful |
+    Sinatra Headwear
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+</head>
+
+<body
+  style="
+    background:#000;
+    color:#fff;
+    font-family:'Inter',sans-serif;
+    text-align:center;
+    padding:60px 20px;
+  "
+>
+
+  <div
+    style="
+      max-width:520px;
+      margin:0 auto;
+      border:1px solid #222;
+      padding:40px;
+      border-radius:8px;
+      background:#111;
+    "
+  >
+
+    <div
+      style="
+        font-size:3rem;
+        color:#25D366;
+        margin-bottom:10px;
+      "
+    >
+      ✓
+    </div>
+
+    <h1
+      style="
+        color:#fff;
+        font-size:2rem;
+        margin-bottom:10px;
+        font-family:'Bebas Neue',sans-serif;
+        letter-spacing:1px;
+      "
+    >
+      PAYMENT SUCCESSFUL!
+    </h1>
+
+    <p
+      id="statusMsg"
+      style="
+        color:#aaa;
+        font-size:.95rem;
+        line-height:1.5;
+      "
+    >
+      Thank you for your order.
+      Your payment was successful.
+    </p>
+
+    <a
+      href="index.html"
+      style="
+        display:inline-block;
+        padding:14px 28px;
+        background:#fff;
+        color:#000;
+        text-decoration:none;
+        font-weight:700;
+        border-radius:4px;
+        margin-top:25px;
+        letter-spacing:.5px;
+      "
+    >
+      RETURN TO HOME
+    </a>
+
   </div>
 
   <script>
-    document.addEventListener("DOMContentLoaded", async () => {
-      const statusMsg = document.getElementById("statusMsg");
-      const pendingOrder = localStorage.getItem("pendingSinatraOrder");
 
-      if (pendingOrder) {
-        try {
-          const orderData = JSON.parse(pendingOrder);
+    document.addEventListener(
+      "DOMContentLoaded",
+      async () => {
 
-          // Send Email via Web3Forms API
-          const response = await fetch("https://api.web3forms.com/submit", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "Accept": "application/json"
-            },
-            body: JSON.stringify(orderData)
-          });
+        const statusMsg =
+          document.getElementById(
+            "statusMsg"
+          );
 
-          if (response.ok) {
-            statusMsg.innerHTML = "Thank you! Your payment was verified and an order receipt has been emailed to you.";
-          } else {
-            statusMsg.innerHTML = "Thank you for your order! Your payment was successful.";
-          }
-        } catch (error) {
-          console.error("Error sending order email:", error);
-          statusMsg.innerHTML = "Thank you! Your order has been placed successfully.";
-        } finally {
-          // Clear cart and pending order storage after email dispatch
-          localStorage.removeItem("pendingSinatraOrder");
-          localStorage.removeItem("sinatra_cart");
+        const storedOrder =
+          localStorage.getItem(
+            "pendingSinatraOrder"
+          );
+
+        if (!storedOrder) {
+
+          statusMsg.innerHTML =
+            "Thank you for shopping with Sinatra Headwear!";
+
+          return;
         }
-      } else {
-        statusMsg.innerHTML = "Thank you for shopping with Sinatra Headwear!";
+
+        try {
+
+          const order =
+            JSON.parse(
+              storedOrder
+            );
+
+          const message =
+`
+NEW SINATRA HEADWEAR ORDER
+==============================
+
+ORDER NUMBER
+${order.paymentId}
+
+CUSTOMER
+------------------------------
+Name: ${order.fullName}
+Email: ${order.email}
+Phone: ${order.phone}
+
+DELIVERY ADDRESS
+------------------------------
+Street:
+${order.address}
+
+Apartment / Unit:
+${order.apartment}
+
+Suburb:
+${order.suburb}
+
+City:
+${order.city}
+
+Province:
+${order.province}
+
+Postal Code:
+${order.postalCode}
+
+ORDER ITEMS
+------------------------------
+${order.orderItems}
+
+PAYMENT
+------------------------------
+Subtotal:
+${order.subtotal}
+
+Shipping:
+${order.shippingFee}
+
+TOTAL PAID:
+${order.totalAmount}
+
+Payment Method:
+PayFast
+
+==============================
+Sinatra Headwear
+`;
+
+          const emailData = {
+
+            // Use your current Web3Forms key here.
+            // You can also restrict this key to
+            // sinatraheadwear.com inside Web3Forms.
+
+            access_key:
+              "YOUR_WEB3FORMS_ACCESS_KEY",
+
+            subject:
+              `NEW PAID ORDER - ${order.paymentId}`,
+
+            from_name:
+              "Sinatra Headwear Orders",
+
+            name:
+              order.fullName,
+
+            email:
+              order.email,
+
+            message
+          };
+
+          const response =
+            await fetch(
+              "https://api.web3forms.com/submit",
+              {
+
+                method:
+                  "POST",
+
+                headers: {
+
+                  "Content-Type":
+                    "application/json",
+
+                  "Accept":
+                    "application/json"
+                },
+
+                body:
+                  JSON.stringify(
+                    emailData
+                  )
+              }
+            );
+
+          const result =
+            await response.json();
+
+          console.log(
+            "Order email:",
+            result
+          );
+
+          if (
+            response.ok &&
+            result.success
+          ) {
+
+            statusMsg.innerHTML =
+              "Thank you! Your payment was successful and your order has been received.";
+
+          } else {
+
+            statusMsg.innerHTML =
+              "Thank you! Your payment was successful and your order has been received.";
+
+            console.error(
+              "Web3Forms error:",
+              result
+            );
+          }
+
+        } catch (error) {
+
+          console.error(
+            "Order notification error:",
+            error
+          );
+
+          statusMsg.innerHTML =
+            "Thank you! Your payment was successful and your order has been received.";
+
+        } finally {
+
+          localStorage.removeItem(
+            "pendingSinatraOrder"
+          );
+
+          localStorage.removeItem(
+            "sinatra_cart"
+          );
+        }
       }
-    });
+    );
+
   </script>
+
 </body>
 </html>

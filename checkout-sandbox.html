@@ -173,18 +173,130 @@
 
   </section>
 
-  <form id="payfastForm" action="https://sandbox.payfast.co.za/eng/process" method="POST" style="display: none;">
-    <input type="hidden" name="merchant_id" value="10051196">
-    <input type="hidden" name="merchant_key" value="e2ser1486yopm">
-    <input type="hidden" name="return_url" value="https://sinatraheadwear.com/success.html">
-    <input type="hidden" name="cancel_url" value="https://sinatraheadwear.com/checkout.html">
-    <input type="hidden" name="notify_url" value="https://sinatra-headwear.vercel.app/api/payfast-itn-sandbox">
-    <input type="hidden" name="m_payment_id" id="pf_payment_id">
-    <input type="hidden" name="amount" id="pf_amount">
-    <input type="hidden" name="item_name" id="pf_item_name">
-    <input type="hidden" name="email_address" id="pf_email">
-    <input type="hidden" name="name_first" id="pf_first_name">
-  </form>
+  <form
+  id="payfastForm"
+  action="https://sandbox.payfast.co.za/eng/process"
+  method="POST"
+  style="display:none;"
+>
+
+  <!-- SANDBOX -->
+
+  <input
+    type="hidden"
+    name="merchant_id"
+    value="10051196"
+  >
+
+  <input
+    type="hidden"
+    name="merchant_key"
+    value="e2ser1486yopm"
+  >
+
+  <input
+    type="hidden"
+    name="return_url"
+    value="https://sinatraheadwear.com/success.html"
+  >
+
+  <input
+    type="hidden"
+    name="cancel_url"
+    value="https://sinatraheadwear.com/checkout-sandbox.html"
+  >
+
+  <input
+    type="hidden"
+    name="notify_url"
+    value="https://sinatra-headwear.vercel.app/api/payfast-itn-sandbox"
+  >
+
+  <input
+    type="hidden"
+    name="m_payment_id"
+    id="pf_payment_id"
+  >
+
+  <input
+    type="hidden"
+    name="amount"
+    id="pf_amount"
+  >
+
+  <input
+    type="hidden"
+    name="item_name"
+    id="pf_item_name"
+  >
+
+  <input
+    type="hidden"
+    name="item_description"
+    id="pf_item_description"
+  >
+
+  <input
+    type="hidden"
+    name="email_address"
+    id="pf_email"
+  >
+
+  <input
+    type="hidden"
+    name="name_first"
+    id="pf_first_name"
+  >
+
+  <input
+    type="hidden"
+    name="cell_number"
+    id="pf_phone"
+  >
+
+  <input
+    type="hidden"
+    name="custom_str1"
+    id="pf_custom_1"
+  >
+
+  <input
+    type="hidden"
+    name="custom_str2"
+    id="pf_custom_2"
+  >
+
+  <input
+    type="hidden"
+    name="custom_str3"
+    id="pf_custom_3"
+  >
+
+  <input
+    type="hidden"
+    name="custom_str4"
+    id="pf_custom_4"
+  >
+
+  <input
+    type="hidden"
+    name="custom_str5"
+    id="pf_custom_5"
+  >
+
+  <input
+    type="hidden"
+    name="email_confirmation"
+    value="1"
+  >
+
+  <input
+    type="hidden"
+    name="confirmation_address"
+    value="sinatraheadwear@gmail.com"
+  >
+
+</form>
 
   <footer class="footer">
     <div class="footer-brand">

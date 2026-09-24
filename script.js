@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
       image: "IMG_9067.png",
       colors: ["Black", "Grey"],
       colorImages: {
-        "Black": "IMG_9081.png",
+        "Black": "IMG_9074.png",
         "Grey": "IMG_9067.png"
       },
       sizes: ["One Size"],
@@ -59,8 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
       image: "IMG_9081.png",
       colors: ["Black", "Grey"],
       colorImages: {
-        "Black": "IMG_9081.png",
-        "Grey": "IMG_9067.png"
+        "Black": "IMG_9075.png",
+        "Grey": "IMG_9081.png"
       },
       sizes: ["One Size"],
       stock: 0,
